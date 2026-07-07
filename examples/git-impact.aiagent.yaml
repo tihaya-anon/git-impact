@@ -1,0 +1,87 @@
+nodes:
+  python-format:
+    paths:
+      - "*.py"
+      - "**/*.py"
+      - pyproject.toml
+      - uv.lock
+      - requirements*.txt
+    command:
+      - ruff
+      - format
+      - .
+
+  python-lint-fix:
+    paths:
+      - "*.py"
+      - "**/*.py"
+      - pyproject.toml
+      - uv.lock
+      - requirements*.txt
+    depends_on:
+      - python-format
+    command:
+      - ruff
+      - check
+      - --fix
+      - .
+
+  rust-format:
+    paths:
+      - Cargo.toml
+      - Cargo.lock
+      - src/**
+      - tests/**
+      - examples/**
+    command:
+      - cargo
+      - fmt
+
+  rust-test:
+    paths:
+      - Cargo.toml
+      - Cargo.lock
+      - src/**
+      - tests/**
+      - examples/**
+    depends_on:
+      - rust-format
+    command:
+      - cargo
+      - test
+
+  rust-clippy:
+    paths:
+      - Cargo.toml
+      - Cargo.lock
+      - src/**
+      - tests/**
+      - examples/**
+    depends_on:
+      - rust-test
+    command:
+      - cargo
+      - clippy
+      - --all-targets
+      - --
+      - -D
+      - warnings
+
+  javascript-format:
+    paths:
+      - "*.js"
+      - "*.jsx"
+      - "*.ts"
+      - "*.tsx"
+      - "**/*.js"
+      - "**/*.jsx"
+      - "**/*.ts"
+      - "**/*.tsx"
+      - package.json
+      - package-lock.json
+      - pnpm-lock.yaml
+      - yarn.lock
+    command:
+      - npm
+      - run
+      - format

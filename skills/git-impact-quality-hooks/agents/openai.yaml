@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Impact Quality Hooks"
+  short_description: "Run changed-file quality hooks"
+  default_prompt: "Use $git-impact-quality-hooks to configure and run git-impact quality hooks for this repo."

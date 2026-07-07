@@ -1,0 +1,51 @@
+# git-impact
+
+`git-impact` answers: "Tell me what changed in Git, let me expand a dependency graph, and then I'll call whatever command you want."
+
+It is designed for CI pipelines, but also includes a `tree`-style terminal view for humans.
+
+## Config
+
+Create `git-impact.yaml`:
+
+```yaml
+nodes:
+  node:
+    paths:
+      - "**"
+    command:
+      - echo
+      - "git-impact: node was impacted"
+```
+
+Use `depends_on` when one node should be impacted by another node's changes. Commands run in dependency order.
+
+## Commands
+
+```bash
+git-impact init
+git-impact validate
+git-impact list
+git-impact plan --base origin/main --head HEAD
+git-impact tree --base origin/main --head HEAD
+git-impact run --base origin/main --head HEAD
+```
+
+By default, diffing uses Git's three-dot range: `base...head`.
+
+Use `--range two-dot` for `base..head`.
+
+`git-impact init` writes a ready-to-run config at the nearest Git repository root. It creates a safe `echo` command and path patterns from the repository's current files. If the repo has no files yet, it writes a placeholder node with `paths: []` and reminds you to add patterns after adding files.
+
+## AI Agent Hooks
+
+This repo includes a `git-impact.yaml` that agents can use as a quality gate for Rust changes:
+
+```bash
+git-impact tree --base origin/main --head HEAD
+git-impact run --base origin/main --head HEAD
+```
+
+For adding similar hooks to other repositories, use the bundled skill at `skills/git-impact-quality-hooks/SKILL.md`.
+
+See `examples/git-impact.aiagent.yaml` for Python Ruff, Rust Cargo, and JavaScript package-script patterns.

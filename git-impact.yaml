@@ -1,0 +1,46 @@
+nodes:
+  rust-format:
+    paths:
+      - Cargo.toml
+      - Cargo.lock
+      - src/**
+    command:
+      - cargo
+      - fmt
+
+  rust-test:
+    paths:
+      - Cargo.toml
+      - Cargo.lock
+      - src/**
+    depends_on:
+      - rust-format
+    command:
+      - cargo
+      - test
+
+  rust-clippy:
+    paths:
+      - Cargo.toml
+      - Cargo.lock
+      - src/**
+    depends_on:
+      - rust-test
+    command:
+      - cargo
+      - clippy
+      - --all-targets
+      - --
+      - -D
+      - warnings
+
+  docs:
+    paths:
+      - README.md
+      - AGENTS.md
+      - examples/**
+      - skills/**
+      - git-impact.example.yaml
+    command:
+      - echo
+      - "git-impact: docs or agent support changed"

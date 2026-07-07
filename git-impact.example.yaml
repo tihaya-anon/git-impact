@@ -1,0 +1,7 @@
+nodes:
+  node:
+    paths:
+      - "**"
+    command:
+      - echo
+      - "git-impact: node was impacted"
