@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Impact Automation"
+  short_description: "Route Git changes to commands"
+  default_prompt: "Use $git-impact-automation to configure and run git-impact automation for this repo."

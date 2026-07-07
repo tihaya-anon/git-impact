@@ -5,26 +5,26 @@ use anyhow::{Context, Result, bail};
 
 use crate::git;
 
-const SKILL_NAME: &str = "git-impact-quality-hooks";
-const SKILL_MD: &str = include_str!("../skills/git-impact-quality-hooks/SKILL.md");
-const OPENAI_YAML: &str = include_str!("../skills/git-impact-quality-hooks/agents/openai.yaml");
+const SKILL_NAME: &str = "git-impact-automation";
+const SKILL_MD: &str = include_str!("../skills/git-impact-automation/SKILL.md");
+const OPENAI_YAML: &str = include_str!("../skills/git-impact-automation/agents/openai.yaml");
 
 pub fn render_prompt(config_path: &Path, base: &str, head: &str) -> String {
     format!(
-        r#"You are an AI coding agent working in a Git repository. Use git-impact as the changed-file quality gate.
+        r#"You are an AI coding agent working in a Git repository. Use git-impact as a changed-file automation router: it reads Git changes, expands a dependency graph, and runs the commands attached to impacted nodes.
 
 Setup:
 1. Check whether `{config}` exists. If it does not, run `git-impact --config {config} init`.
-2. Inspect `{config}` and replace placeholder `echo` commands with deterministic quality hooks for this repo.
-3. Prefer small nodes tied to file patterns, for example Python files -> `ruff format .`, Rust files -> `cargo fmt`, shared libraries -> tests that cover dependents.
-4. Use `depends_on` when one check must run before another check, or when downstream nodes should be impacted by upstream changes.
+2. Inspect `{config}` and replace placeholder `echo` commands with deterministic repo-specific commands.
+3. Prefer small nodes tied to meaningful file patterns. Examples: Python files -> `ruff format .`, Makefile changes -> `make test`, Dockerfile or docker context changes -> image/layer checks, OpenAPI/spec changes -> generated-client or contract tests, shared library changes -> dependent test suites.
+4. Use `depends_on` when one node must run before another node, or when downstream nodes should be impacted by upstream changes.
 5. Keep commands as argv arrays. Do not rely on shell pipes, redirection, aliases, or interactive prompts.
 
-Before finishing changes:
+Before finishing changes or handing work back:
 1. Run `git-impact --config {config} validate`.
 2. Run `git-impact --config {config} tree --base {base} --head {head}` and inspect the impacted graph.
-3. Run `git-impact --config {config} run --base {base} --head {head}` when the tools are available in this environment.
-4. If a command cannot run because a tool is missing, report the missing tool and the skipped git-impact node.
+3. Run `git-impact --config {config} run --base {base} --head {head}` when the impacted commands are appropriate and available in this environment.
+4. If a command cannot run because a tool is missing or the environment is unsuitable, report the missing prerequisite and the skipped git-impact node.
 
 For reusable agent instructions, run `git-impact skills` to create a `{skill}` skill folder in this repo.
 "#,
@@ -85,7 +85,9 @@ mod tests {
         assert!(prompt.contains("git-impact --config git-impact.yaml init"));
         assert!(prompt.contains("git-impact --config git-impact.yaml validate"));
         assert!(prompt.contains("git-impact skills"));
-        assert!(prompt.contains("ruff format"));
+        assert!(prompt.contains("Makefile changes"));
+        assert!(prompt.contains("Dockerfile"));
+        assert!(prompt.contains("OpenAPI/spec changes"));
     }
 
     #[test]
@@ -131,7 +133,7 @@ mod tests {
         assert!(
             fs::read_to_string(skill_dir.join("SKILL.md"))
                 .unwrap()
-                .contains("git-impact-quality-hooks")
+                .contains("git-impact-automation")
         );
 
         fs::remove_dir_all(repo).unwrap();

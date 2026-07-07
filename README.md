@@ -39,7 +39,7 @@ Use `--range two-dot` for `base..head`.
 
 `git-impact init` writes a ready-to-run config at the nearest Git repository root. It creates a safe `echo` command and path patterns from the repository's current files. If the repo has no files yet, it writes a placeholder node with `paths: []` and reminds you to add patterns after adding files.
 
-## AI Agent Hooks
+## AI Agent Automation
 
 `git-impact prompt` prints setup instructions that can be pasted into an AI agent:
 
@@ -47,19 +47,19 @@ Use `--range two-dot` for `base..head`.
 git-impact prompt
 ```
 
-`git-impact skills` creates a reusable skill folder at `skills/git-impact-quality-hooks` under the nearest Git repo root:
+`git-impact skills` creates a reusable skill folder at `skills/git-impact-automation` under the nearest Git repo root:
 
 ```bash
 git-impact skills
 ```
 
-This repo includes a `git-impact.yaml` that agents can use as a quality gate for Rust changes:
+This repo includes a `git-impact.yaml` that agents can use to route Rust source changes to Cargo commands:
 
 ```bash
 git-impact tree --base origin/main --head HEAD
 git-impact run --base origin/main --head HEAD
 ```
 
-For adding similar hooks to other repositories, use the bundled skill at `skills/git-impact-quality-hooks/SKILL.md`.
+For adding similar automation to other repositories, use the bundled skill at `skills/git-impact-automation/SKILL.md`.
 
-See `examples/git-impact.aiagent.yaml` for Python Ruff, Rust Cargo, and JavaScript package-script patterns.
+See `examples/git-impact.aiagent.yaml` for Python Ruff, Rust Cargo, and JavaScript package-script patterns. The same graph model can drive Makefile targets, Docker build checks, generated-code/spec tests, deploy commands, and other repo-specific automation.
