@@ -63,3 +63,21 @@ git-impact run --base origin/main --head HEAD
 For adding similar automation to other repositories, use the bundled skill at `skills/git-impact-automation/SKILL.md`.
 
 See `examples/git-impact.aiagent.yaml` for Python Ruff, Rust Cargo, and JavaScript package-script patterns. The same graph model can drive Makefile targets, Docker build checks, generated-code/spec tests, deploy commands, and other repo-specific automation.
+
+## CI Install
+
+Install from GitHub Releases on Linux:
+
+```bash
+curl -L https://github.com/<owner>/git-impact/releases/download/v0.1.0/git-impact-x86_64-unknown-linux-gnu.tar.gz \
+  | tar xz
+sudo mv git-impact-x86_64-unknown-linux-gnu /usr/local/bin/git-impact
+```
+
+Or compile from a Git tag:
+
+```bash
+cargo install --git https://github.com/<owner>/git-impact --tag v0.1.0 --locked
+```
+
+Release binaries are built by `.github/workflows/release.yml` when a `v*` tag is pushed.
