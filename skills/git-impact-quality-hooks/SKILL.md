@@ -21,9 +21,21 @@ git-impact --version
 git-impact init
 ```
 
-3. Replace placeholder `echo` commands with real quality hooks. Keep commands deterministic and noninteractive.
+3. If the repo needs reusable agent instructions, create the skill:
 
-4. Validate and inspect the impact plan before running:
+```bash
+git-impact skills
+```
+
+4. To hand instructions to another agent, print the bootstrap prompt:
+
+```bash
+git-impact prompt
+```
+
+5. Replace placeholder `echo` commands with real quality hooks. Keep commands deterministic and noninteractive.
+
+6. Validate and inspect the impact plan before running:
 
 ```bash
 git-impact validate
@@ -31,7 +43,7 @@ git-impact tree --base origin/main --head HEAD
 git-impact plan --base origin/main --head HEAD
 ```
 
-5. Run the impacted checks:
+7. Run the impacted checks:
 
 ```bash
 git-impact run --base origin/main --head HEAD

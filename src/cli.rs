@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use anyhow::Result;
 use clap::{Args, Parser, Subcommand, ValueEnum};
 
+use crate::agent;
 use crate::config::Config;
 use crate::git::{self, DiffRange};
 use crate::graph::{ImpactPlan, Planner};
@@ -27,6 +28,12 @@ enum Command {
     /// Create a ready-to-run config file at the nearest Git repo root.
     Init(InitArgs),
 
+    /// Print instructions an AI agent can use to set up git-impact.
+    Prompt(PromptArgs),
+
+    /// Create a git-impact skill folder for AI agents.
+    Skills(SkillsArgs),
+
     /// Validate the graph config and exit.
     Validate,
 
@@ -41,6 +48,26 @@ enum Command {
 
     /// Execute commands for impacted nodes.
     Run(RunArgs),
+}
+
+#[derive(Debug, Args)]
+struct PromptArgs {
+    #[arg(long, default_value = "origin/main")]
+    base: String,
+
+    #[arg(long, default_value = "HEAD")]
+    head: String,
+}
+
+#[derive(Debug, Args)]
+struct SkillsArgs {
+    /// Directory under the nearest Git repo root where the skill folder is created.
+    #[arg(long, default_value = "skills")]
+    output: PathBuf,
+
+    /// Overwrite existing generated skill files.
+    #[arg(long)]
+    force: bool,
 }
 
 #[derive(Debug, Args)]
@@ -112,6 +139,16 @@ pub fn run() -> Result<()> {
                     "no repo files found; the config contains a placeholder node with no paths. Add file patterns after adding files, or run `git-impact init --force` later."
                 );
             }
+        }
+        Command::Prompt(args) => {
+            print!(
+                "{}",
+                agent::render_prompt(&cli.config, &args.base, &args.head)
+            );
+        }
+        Command::Skills(args) => {
+            let path = agent::create_skill(&args.output, args.force)?;
+            println!("created {}", path.display());
         }
         Command::Validate => {
             let config = Config::from_path(&cli.config)?;

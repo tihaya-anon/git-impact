@@ -24,6 +24,8 @@ Use `depends_on` when one node should be impacted by another node's changes. Com
 
 ```bash
 git-impact init
+git-impact prompt
+git-impact skills
 git-impact validate
 git-impact list
 git-impact plan --base origin/main --head HEAD
@@ -38,6 +40,18 @@ Use `--range two-dot` for `base..head`.
 `git-impact init` writes a ready-to-run config at the nearest Git repository root. It creates a safe `echo` command and path patterns from the repository's current files. If the repo has no files yet, it writes a placeholder node with `paths: []` and reminds you to add patterns after adding files.
 
 ## AI Agent Hooks
+
+`git-impact prompt` prints setup instructions that can be pasted into an AI agent:
+
+```bash
+git-impact prompt
+```
+
+`git-impact skills` creates a reusable skill folder at `skills/git-impact-quality-hooks` under the nearest Git repo root:
+
+```bash
+git-impact skills
+```
 
 This repo includes a `git-impact.yaml` that agents can use as a quality gate for Rust changes:
 
