@@ -214,14 +214,14 @@ fn render_tree(root: &TreeNode) -> String {
 
 fn render_tree_child(node: &TreeNode, prefix: &str, is_last: bool, output: &mut String) {
     output.push_str(prefix);
-    output.push_str(if is_last { "`-- " } else { "|-- " });
+    output.push_str(if is_last { "└── " } else { "├── " });
     output.push_str(&node.label);
     output.push('\n');
 
     let child_prefix = if is_last {
         format!("{prefix}    ")
     } else {
-        format!("{prefix}|   ")
+        format!("{prefix}│   ")
     };
 
     for (index, child) in node.children.iter().enumerate() {
@@ -250,7 +250,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn renders_tree_style_impact_output() {
+    fn renders_unicode_tree_style_impact_output() {
         let config = Config::from_yaml(
             r#"
 nodes:
@@ -276,9 +276,24 @@ nodes:
 
         let output = render_impact_tree(&config, &plan);
 
-        assert!(output.contains("|-- changed files"));
-        assert!(output.contains("catalog [direct]"));
-        assert!(output.contains("dagster [impacted]"));
-        assert!(output.contains("command: terragrunt apply"));
+        assert_eq!(
+            output,
+            concat!(
+                "git-impact\n",
+                "├── changed files\n",
+                "│   └── modules/datalake/catalog/schema.sql\n",
+                "├── impact expansion\n",
+                "│   └── catalog [direct]\n",
+                "│       ├── matched files\n",
+                "│       │   └── modules/datalake/catalog/schema.sql\n",
+                "│       ├── command: terragrunt apply\n",
+                "│       └── downstream\n",
+                "│           └── dagster [impacted]\n",
+                "│               └── command: make deploy\n",
+                "└── execution order\n",
+                "    ├── catalog: terragrunt apply\n",
+                "    └── dagster: make deploy\n",
+            )
+        );
     }
 }
